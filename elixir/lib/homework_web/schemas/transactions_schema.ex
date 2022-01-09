@@ -13,9 +13,14 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
     field(:credit, :boolean)
     field(:debit, :boolean)
     field(:description, :string)
+    field(:company_id, :id)
     field(:merchant_id, :id)
     field(:inserted_at, :naive_datetime)
     field(:updated_at, :naive_datetime)
+
+    field(:company, :company) do
+      resolve(&TransactionsResolver.company/3)
+    end
 
     field(:user, :user) do
       resolve(&TransactionsResolver.user/3)
@@ -30,6 +35,7 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
     @desc "Create a new transaction"
     field :create_transaction, :transaction do
       arg(:user_id, non_null(:id))
+      arg(:company_id, non_null(:id))
       arg(:merchant_id, non_null(:id))
       @desc "amount is in cents"
       arg(:amount, non_null(:integer))
@@ -43,6 +49,7 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
     @desc "Update a new transaction"
     field :update_transaction, :transaction do
       arg(:id, non_null(:id))
+      arg(:company_id, non_null(:id))
       arg(:user_id, non_null(:id))
       arg(:merchant_id, non_null(:id))
       @desc "amount is in cents"
