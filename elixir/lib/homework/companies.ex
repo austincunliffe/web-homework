@@ -38,6 +38,26 @@ defmodule Homework.Companies do
   def get_company!(id), do: Repo.get!(Company, id)
 
   @doc """
+  Gets and locks a single company.
+
+  Raises `Ecto.NoResultsError` if the Company does not exist.
+
+  ## Examples
+
+      iex> get_company_and_lock!(123)
+      %Company{}
+
+      iex> get_company_and_lock!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_and_lock_company!(id) do
+    Company
+    |> where([c], c.id == ^id)
+    |> lock("FOR UPDATE")
+  end
+
+  @doc """
   Creates a company.
 
   ## Examples
