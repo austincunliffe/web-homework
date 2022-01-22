@@ -12,7 +12,7 @@ defmodule HomeworkWeb.Resolvers.CompaniesResolver do
   Creates a company
   """
   def create_company(_root, args, _info) do
-    case Companies.create_companies(args) do
+    case Companies.create_company(args) do
       {:ok, company} ->
         {:ok, company}
 
