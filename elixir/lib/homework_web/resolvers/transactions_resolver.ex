@@ -71,7 +71,7 @@ defmodule HomeworkWeb.Resolvers.TransactionsResolver do
         {:ok, transaction}
 
       error ->
-        {:error, "could not update transaction: #{inspect(error)}"}
+        {:error, "could not delete transaction: #{inspect(error)}"}
     end
   end
 end
