@@ -58,4 +58,13 @@ defmodule HomeworkWeb.Resolvers.UsersResolver do
         {:error, "could not update user: #{inspect(error)}"}
     end
   end
+
+  @doc """
+  Get a list of users search by first and last name
+  """
+  def search_users(_root, %{first_name: first_name, last_name: last_name}, _info) do
+    # users = Users.search_users(first_name, last_name)
+    # IO.puts(users)
+    {:ok, Users.search_users(first_name, last_name)}
+  end
 end

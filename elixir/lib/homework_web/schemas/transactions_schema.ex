@@ -17,6 +17,13 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
     field(:merchant_id, :id)
     field(:inserted_at, :naive_datetime)
     field(:updated_at, :naive_datetime)
+  end
+
+  object :transaction_queries do
+    @desc "Get all Transactions"
+    field(:transactions, list_of(:transaction)) do
+      resolve(&TransactionsResolver.transactions/3)
+    end
 
     field(:company, :company) do
       resolve(&TransactionsResolver.company/3)

@@ -101,4 +101,11 @@ defmodule Homework.Users do
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
   end
+
+  def search_users(first_name, last_name) do
+    query = from(u in User,
+      where: ilike(u.first_name, ^("%#{first_name}%")) and ilike(u.last_name, ^("%#{last_name}%"))
+    )
+    Repo.all(query)
+  end
 end

@@ -15,6 +15,13 @@ defmodule HomeworkWeb.Schemas.CompaniesSchema do
     field(:updated_at, :naive_datetime)
   end
 
+  object :company_queries do
+    @desc "Get all Companies"
+    field(:companies, list_of(:company)) do
+      resolve(&CompaniesResolver.companies/3)
+    end
+  end
+
   object :company_mutations do
     @desc "Create a new company"
     field :create_company, :company do
