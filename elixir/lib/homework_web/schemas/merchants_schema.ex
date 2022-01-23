@@ -19,6 +19,13 @@ defmodule HomeworkWeb.Schemas.MerchantsSchema do
     field(:merchants, list_of(:merchant)) do
       resolve(&MerchantsResolver.merchants/3)
     end
+
+    @desc "Fuzzy searches on name and returns a list of merchants"
+    field(:search_merchants, list_of(:merchant)) do
+      arg(:name, non_null(:string))
+
+      resolve(&MerchantsResolver.search_merchants/3)
+    end
   end
 
   object :merchant_mutations do
