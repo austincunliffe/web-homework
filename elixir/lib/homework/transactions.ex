@@ -129,6 +129,21 @@ defmodule Homework.Transactions do
     Transaction.changeset(transaction, attrs)
   end
 
+  @doc """
+  Gets all transactions between a min and max range.
+
+  ## Examples
+
+      iex> search_transactions_by_range(1200, 2000)
+      [%Transaction{}, ...]
+
+  """
+  def search_transactions_by_range(min, max) do
+    query = from t in Transaction,
+    where: fragment("? BETWEEN ? AND ?", t.amount, ^min, ^max)
+    Repo.all(query)
+  end
+
   defp update_company_available_credit() do
     fn repo, %{insert_transaction: %{ok: transaction}} ->
       company = Companies.get_and_lock_company!(transaction.company_id)
