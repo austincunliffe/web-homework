@@ -86,7 +86,7 @@ defmodule Homework.Transactions do
       |> Multi.update(:update_transaction_step, transaction_changeset)
       |> Multi.run(
         :update_company_available_credit_step,
-        update_company_available_credit(transaction_changeset)
+        update_company_available_credit(transaction_changeset.data, transaction_changeset.changes)
       )
 
     case Repo.transaction(multi) do
@@ -189,7 +189,7 @@ defmodule Homework.Transactions do
     end
   end
 
-  defp update_company_available_credit(%{data: original_data, changes: changes} = _changeset) do
+  defp update_company_available_credit(original_data, changes) do
     fn repo, %{update_transaction_step: %{ok: transaction}} ->
       company = Companies.get_and_lock_company!(original_data.company_id)
 
