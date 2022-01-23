@@ -150,7 +150,7 @@ defmodule Homework.Transactions do
       [%Transaction{}, ...]
 
   """
-  def search_transactions_by_range(min, max) do
+  def get_transactions_within_range(min, max) do
     query =
       from(t in Transaction,
         where: fragment("? BETWEEN ? AND ?", t.amount, ^min, ^max)

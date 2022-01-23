@@ -74,4 +74,11 @@ defmodule HomeworkWeb.Resolvers.TransactionsResolver do
         {:error, "could not delete transaction: #{inspect(error)}"}
     end
   end
+
+  @doc """
+  Gets a list of transactions between a min and max range.
+  """
+  def get_transactions_within_range(_root, %{min: min, max: max}, _info) do
+    {:ok, Transactions.get_transactions_within_range(min, max)}
+  end
 end
