@@ -52,17 +52,18 @@ defmodule Homework.Transactions do
 
   """
   def create_transaction(attrs \\ %{}) do
-    multi = Multi.new()
-    |> Multi.insert(:insert_transaction, %Transaction{} |> Transaction.changeset(attrs))
-    |> Multi.run(:update_company_available_credit_step, update_company_available_credit())
+    multi =
+      Multi.new()
+      |> Multi.insert(:insert_transaction, %Transaction{} |> Transaction.changeset(attrs))
+      |> Multi.run(:update_company_available_credit_step, update_company_available_credit())
 
     case Repo.transaction(multi) do
       {:ok, %{transaction: transaction}} ->
         {:ok, transaction}
 
-      error -> {:error, error}
+      error ->
+        {:error, error}
     end
-
   end
 
   @doc """
@@ -79,15 +80,21 @@ defmodule Homework.Transactions do
   """
   def update_transaction(%Transaction{} = transaction, attrs) do
     transaction_changeset = change_transaction(transaction, attrs)
-    multi = Multi.new()
-    |> Multi.update(:update_transaction_step, transaction_changeset)
-    |> Multi.run(:update_company_available_credit_step, update_company_available_credit(transaction_changeset))
+
+    multi =
+      Multi.new()
+      |> Multi.update(:update_transaction_step, transaction_changeset)
+      |> Multi.run(
+        :update_company_available_credit_step,
+        update_company_available_credit(transaction_changeset)
+      )
 
     case Repo.transaction(multi) do
       {:ok, %{transaction: transaction}} ->
         {:ok, transaction}
 
-      error -> {:error, error}
+      error ->
+        {:error, error}
     end
   end
 
@@ -104,15 +111,20 @@ defmodule Homework.Transactions do
 
   """
   def delete_transaction(%Transaction{} = transaction) do
-    multi = Multi.new()
-    |> Multi.delete(:delete_transaction, transaction)
-    |> Multi.run(:update_company_available_credit_step, update_company_available_credit(transaction))
+    multi =
+      Multi.new()
+      |> Multi.delete(:delete_transaction, transaction)
+      |> Multi.run(
+        :update_company_available_credit_step,
+        update_company_available_credit(transaction)
+      )
 
     case Repo.transaction(multi) do
       {:ok, %{transaction: transaction}} ->
         {:ok, transaction}
 
-      error -> {:error, error}
+      error ->
+        {:error, error}
     end
   end
 
@@ -139,8 +151,11 @@ defmodule Homework.Transactions do
 
   """
   def search_transactions_by_range(min, max) do
-    query = from t in Transaction,
-    where: fragment("? BETWEEN ? AND ?", t.amount, ^min, ^max)
+    query =
+      from(t in Transaction,
+        where: fragment("? BETWEEN ? AND ?", t.amount, ^min, ^max)
+      )
+
     Repo.all(query)
   end
 
@@ -148,7 +163,9 @@ defmodule Homework.Transactions do
     fn repo, %{insert_transaction: %{ok: transaction}} ->
       company = Companies.get_and_lock_company!(transaction.company_id)
 
-      available_credit_adjustment = if transaction.debit, do: -transaction.amount, else: transaction.amount
+      available_credit_adjustment =
+        if transaction.debit, do: -transaction.amount, else: transaction.amount
+
       updated_available_credit = company.available_credit + available_credit_adjustment
 
       company
@@ -161,7 +178,9 @@ defmodule Homework.Transactions do
     fn repo, _ ->
       company = Companies.get_and_lock_company!(transaction.company_id)
 
-      available_credit_adjustment = if transaction.debit, do: -transaction.amount, else: transaction.amount
+      available_credit_adjustment =
+        if transaction.debit, do: -transaction.amount, else: transaction.amount
+
       updated_available_credit = company.available_credit + available_credit_adjustment
 
       company
@@ -174,9 +193,10 @@ defmodule Homework.Transactions do
     fn repo, %{update_transaction_step: %{ok: transaction}} ->
       company = Companies.get_and_lock_company!(original_data.company_id)
 
-      updated_available_credit = company.available_credit
-      |> reverse_transaction_amount_from_available_credit(original_data, changes)
-      |> update_available_credit_for_new_transaction(transaction)
+      updated_available_credit =
+        company.available_credit
+        |> reverse_transaction_amount_from_available_credit(original_data, changes)
+        |> update_available_credit_for_new_transaction(transaction)
 
       company
       |> Companies.change_company(%{available_credit: updated_available_credit})
@@ -184,16 +204,30 @@ defmodule Homework.Transactions do
     end
   end
 
-  defp reverse_transaction_amount_from_available_credit(available_credit, original_transaction, transaction_changes) do
-    if Enum.any?(["company_id", "debit", "credit", "amount"], &Map.has_key?(transaction_changes, &1)) do
-      available_credit_adjustment = if original_transaction.debit, do: original_transaction.amount, else: -original_transaction.amount
+  defp reverse_transaction_amount_from_available_credit(
+         available_credit,
+         original_transaction,
+         transaction_changes
+       ) do
+    if Enum.any?(
+         ["company_id", "debit", "credit", "amount"],
+         &Map.has_key?(transaction_changes, &1)
+       ) do
+      available_credit_adjustment =
+        if original_transaction.debit,
+          do: original_transaction.amount,
+          else: -original_transaction.amount
+
       ^available_credit = available_credit + available_credit_adjustment
     end
+
     available_credit
   end
 
   defp update_available_credit_for_new_transaction(available_credit, transaction) do
-    available_credit_adjustment = if transaction.debit, do: -transaction.amount, else: transaction.amount
+    available_credit_adjustment =
+      if transaction.debit, do: -transaction.amount, else: transaction.amount
+
     available_credit = available_credit + available_credit_adjustment
     available_credit
   end
