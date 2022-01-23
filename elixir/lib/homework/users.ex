@@ -102,10 +102,22 @@ defmodule Homework.Users do
     User.changeset(user, attrs)
   end
 
+  @doc """
+  Fuzzy searches on first and last name and returns a list of users.
+
+  ## Examples
+
+      iex> search_user("River", "Hilpert")
+      [%User{}, ...]
+
+  """
   def search_users(first_name, last_name) do
-    query = from(u in User,
-      where: ilike(u.first_name, ^("%#{first_name}%")) and ilike(u.last_name, ^("%#{last_name}%"))
-    )
+    query =
+      from(u in User,
+        where: fragment("SIMILARITY(?, ?) > 0", u.first_name, ^"%#{first_name}%"),
+        or_where: fragment("SIMILARITY(?, ?) > 0", u.last_name, ^"%#{last_name}%")
+      )
+
     Repo.all(query)
   end
 end
