@@ -22,7 +22,7 @@ defmodule HomeworkWeb.Schemas.UsersSchema do
       resolve(&UsersResolver.users/3)
     end
 
-    @desc "searches for users on first and last name"
+    @desc "Fuzzy searches for users on first and last name"
     field :search_users, list_of(:user) do
       arg(:first_name, non_null(:string))
       arg(:last_name, non_null(:string))
