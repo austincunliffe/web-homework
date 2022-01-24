@@ -52,9 +52,13 @@ defmodule Homework.Companies do
 
   """
   def get_and_lock_company!(id) do
-    Company
-    |> where([c], c.id == ^id)
-    |> lock("FOR UPDATE")
+    query =
+      from(c in Company,
+        where: c.id == ^id,
+        lock: "FOR UPDATE"
+      )
+
+    Repo.one(query)
   end
 
   @doc """
