@@ -115,6 +115,7 @@ defmodule Homework.Merchants do
     query =
       from(m in Merchant,
         where: fragment("SIMILARITY(?, ?) > 0", m.name, ^"%#{name}%")
+        order_by: fragment("LEVENSHTEIN(?, ?)", m.name, ^"%#{name}%")
       )
 
     Repo.all(query)
