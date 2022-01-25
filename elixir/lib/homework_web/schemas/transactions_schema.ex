@@ -26,11 +26,11 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
     end
 
     @desc "Get all Transactions within an amount range"
-    field(:get_transactions_within_range, list_of(:transaction)) do
+    field(:find_transactions, list_of(:transaction)) do
       arg(:min, non_null(:integer))
       arg(:max, non_null(:integer))
 
-      resolve(&TransactionsResolver.get_transactions_within_range/3)
+      resolve(&TransactionsResolver.find_transactions/3)
     end
 
     field(:company, :company) do
