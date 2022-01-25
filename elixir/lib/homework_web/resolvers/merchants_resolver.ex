@@ -50,4 +50,11 @@ defmodule HomeworkWeb.Resolvers.MerchantsResolver do
         {:error, "could not update merchant: #{inspect(error)}"}
     end
   end
+
+  @doc """
+  Fuzzy searches on name and returns a list of merchants.
+  """
+  def search_merchants(_root, %{name: name}, _info) do
+    {:ok, Merchants.search_merchants(name)}
+  end
 end

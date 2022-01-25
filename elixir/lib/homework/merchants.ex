@@ -101,4 +101,23 @@ defmodule Homework.Merchants do
   def change_merchant(%Merchant{} = merchant, attrs \\ %{}) do
     Merchant.changeset(merchant, attrs)
   end
+
+  @doc """
+  Fuzzy searches on name and returns a list of merchants.
+
+  ## Examples
+
+      iex> search_merchants("Garden Company")
+      [%Merchants{}, ...]
+
+  """
+  def search_merchants(name) do
+    query =
+      from(m in Merchant,
+        where: fragment("SIMILARITY(?, ?) > 0", m.name, ^"%#{name}%"),
+        order_by: fragment("LEVENSHTEIN(?, ?)", m.name, ^"%#{name}%")
+      )
+
+    Repo.all(query)
+  end
 end

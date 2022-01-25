@@ -9,13 +9,33 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
   object :transaction do
     field(:id, non_null(:id))
     field(:user_id, :id)
-    field(:amount, :integer)
+    field(:amount, :decimal)
     field(:credit, :boolean)
     field(:debit, :boolean)
     field(:description, :string)
+    field(:company_id, :id)
     field(:merchant_id, :id)
     field(:inserted_at, :naive_datetime)
     field(:updated_at, :naive_datetime)
+  end
+
+  object :transaction_queries do
+    @desc "Get all Transactions"
+    field(:transactions, list_of(:transaction)) do
+      resolve(&TransactionsResolver.transactions/3)
+    end
+
+    @desc "Get all Transactions within an amount range"
+    field(:find_transactions, list_of(:transaction)) do
+      arg(:min, non_null(:integer))
+      arg(:max, non_null(:integer))
+
+      resolve(&TransactionsResolver.find_transactions/3)
+    end
+
+    field(:company, :company) do
+      resolve(&TransactionsResolver.company/3)
+    end
 
     field(:user, :user) do
       resolve(&TransactionsResolver.user/3)
@@ -30,6 +50,7 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
     @desc "Create a new transaction"
     field :create_transaction, :transaction do
       arg(:user_id, non_null(:id))
+      arg(:company_id, non_null(:id))
       arg(:merchant_id, non_null(:id))
       @desc "amount is in cents"
       arg(:amount, non_null(:integer))
@@ -43,6 +64,7 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
     @desc "Update a new transaction"
     field :update_transaction, :transaction do
       arg(:id, non_null(:id))
+      arg(:company_id, non_null(:id))
       arg(:user_id, non_null(:id))
       arg(:merchant_id, non_null(:id))
       @desc "amount is in cents"
