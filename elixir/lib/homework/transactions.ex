@@ -61,8 +61,11 @@ defmodule Homework.Transactions do
       {:ok, %{insert_transaction: transaction}} ->
         {:ok, transaction}
 
-      error ->
-        {:error, error}
+      {:error, :insert_transaction, changeset, _} ->
+        {:error, changeset}
+
+      {:error, :update_company_available_credit_step, changeset, _} ->
+        {:error, changeset}
     end
   end
 
@@ -93,8 +96,11 @@ defmodule Homework.Transactions do
       {:ok, %{update_transaction: transaction}} ->
         {:ok, transaction}
 
-      error ->
-        {:error, error}
+      {:error, :update_transaction, changeset, _} ->
+        {:error, changeset}
+
+      {:error, %{update_company_available_credit_step: changeset}} ->
+        {:error, changeset}
     end
   end
 
@@ -123,8 +129,11 @@ defmodule Homework.Transactions do
       {:ok, %{delete_transaction: transaction}} ->
         {:ok, transaction}
 
-      error ->
-        {:error, error}
+      {:error, :delete_transaction, changeset, _} ->
+        {:error, changeset}
+
+      {:error, %{update_company_available_credit_step: changeset}} ->
+        {:error, changeset}
     end
   end
 
