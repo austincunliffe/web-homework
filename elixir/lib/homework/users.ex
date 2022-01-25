@@ -116,7 +116,7 @@ defmodule Homework.Users do
       from(u in User,
         where: fragment("SIMILARITY(?, ?) > 0", u.first_name, ^"%#{first_name}%"),
         or_where: fragment("SIMILARITY(?, ?) > 0", u.last_name, ^"%#{last_name}%"),
-        order_by: fragment("LEVENSHTEIN(?, ?)", u.first_name, ^"%#{first_name}%"),
+        order_by: fragment("LEVENSHTEIN(?, ?)", u.first_name, ^"%#{first_name}%")
       )
 
     Repo.all(query)
